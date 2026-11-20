@@ -1,7 +1,3 @@
-## Group Members
-* Ригвава - Backend Development (Java, Parser, Gson)
-* Девочка пони - Frontend Development (HTML, CSS, JavaScript)
-* Селиванов - Testing, Documentation, GitHub Pages deployment
 # Quiz DSL Generator
 ## Project Description
 This is a group project developed as part of the university coursework. The application generates an interactive HTML/JavaScript quiz form based on a custom Domain-Specific Language (DSL). 
@@ -11,10 +7,10 @@ The project is divided into two main parts:
 2. **Frontend (HTML/JS):** Reads the generated data and renders a dynamic, interactive quiz form with answer validation and theme switching.
 
 ## Group Members
-* [Участник 1] - Backend Development (Java, Parser, Gson)
-* [Участник 2] - Frontend Development (HTML, CSS, JavaScript)
-* [Участник 3] - Testing, Documentation, GitHub Pages deployment
-
+* Ригвава - Backend Development (Java, Parser, Gson)
+* Девочка пони - Frontend Development (HTML, CSS, JavaScript)
+* Селиванов - Testing, Documentation, GitHub Pages deployment
+  
 ## Tech Stack
 * **Backend:** Java 8, Gson, Java Collections Framework, Stream API.
 * **Frontend:** HTML5, CSS3, Vanilla JavaScript (ES5/ES6).
