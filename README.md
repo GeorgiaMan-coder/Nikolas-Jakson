@@ -1,5 +1,3 @@
-# Nikolas-Jakson
-hi jak
 ## Group Members
 * [Участник 1] - Backend Development (Java, Parser, Gson)
 * [Участник 2] - Frontend Development (HTML, CSS, JavaScript)
