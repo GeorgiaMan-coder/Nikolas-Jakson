@@ -41,3 +41,49 @@ button {
 #result {
     font-weight: bold;
 }
+
+/* =========================================
+   ДОБАВЛЕНО: Стили для переключателя и темной темы
+   ========================================= */
+
+/* Делаем плавный переход цветов */
+body, .question, input[type="text"], button {
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Стили для самой кнопки в светлой теме */
+#theme-toggle {
+    background: #e2e8f0;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+#theme-toggle:hover {
+    background: #cbd5e1;
+}
+
+/* Стили для темной темы (срабатывают, когда на body есть класс .dark) */
+body.dark {
+    background: #121212;
+    color: #e0e0e0;
+}
+
+body.dark .question {
+    background: #1e1e1e;
+    border-color: #333333;
+}
+
+body.dark input[type="text"] {
+    background: #2d2d2d;
+    color: #ffffff;
+    border-color: #444444;
+}
+
+body.dark #theme-toggle {
+    background: #333333;
+    color: #ffffff;
+}
+
+body.dark #theme-toggle:hover {
+    background: #444444;
+}
