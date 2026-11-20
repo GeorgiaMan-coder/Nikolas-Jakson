@@ -1,63 +1,196 @@
 ﻿<!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
+    <!-- Кодировка страницы, чтобы русские буквы и спецсимволы отображались правильно -->
     <meta charset="UTF-8">
-    <title>Моя первая игра</title>
+    <!-- Заголовок вкладки браузера. В реальном проекте Java подставит сюда значение из директивы Title -->
+    <title>My title</title>
+
     <style>
+        /* --- БЛОК СТИЛЕЙ (CSS) --- */
+        /* Общие настройки для всей страницы */
         body {
-            background-color: #222;
-            color: white;
-            text-align: center;
-            font-family: sans-serif;
-            margin-top: 50px;
+            font-family: sans-serif; /* Шрифт без засечек */
+            max-width: 600px; /* Максимальная ширина страницы */
+            margin: 20px auto; /* Отступы сверху/снизу и выравнивание по центру */
+            padding: 20px;
+            background-color: #f9f9f9; /* Светло-серый фон */
         }
 
-        canvas {
-            background-color: #111;
-            border: 3px solid #555;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        /* Стиль для блока каждого вопроса (белая карточка с тенью) */
+        .question-block {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px; /* Отступ между вопросами */
+            border-radius: 8px; /* Скругление углов */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Легкая тень */
+        }
+
+        /* Стиль для текста самого вопроса */
+        .question-text {
+            font-weight: bold; /* Жирный шрифт */
+            font-size: 1.2em; /* Чуть больше обычного текста */
+            margin-bottom: 10px;
+        }
+
+        /* Стиль для вариантов ответов (чтобы они шли друг под другом) */
+        label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer; /* Курсор в виде руки при наведении */
+        }
+
+        /* Стиль для поля текстового ввода */
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc; /* Серая рамка */
+            border-radius: 4px;
+            box-sizing: border-box; /* Чтобы padding не увеличивал ширину */
+        }
+
+        /* Стиль для кнопки проверки */
+        button {
+            background-color: #007bff; /* Синий цвет */
+            color: white; /* Белый текст */
+            padding: 10px 20px;
+            border: none; /* Убираем рамку */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+            /* Эффект при наведении на кнопку */
+            button:hover {
+                background-color: #0056b3; /* Темно-синий цвет */
+            }
+
+        /* Общие стили для блока с результатом */
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Стиль, если пользователь ответил на всё правильно (зеленый) */
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Стиль, если есть ошибки (красный) */
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
 <body>
-    <h1>Моя первая игра!</h1>
-    <p>Управление: стрелки на клавиатуре</p>
 
-    <!-- Это поле, где происходит игра -->
-    <canvas id="gameCanvas" width="700" height="700"></canvas>
+    <!-- Главный заголовок теста. В реальном проекте Java подставит сюда значение из директивы H1 -->
+    <h1>Super Test</h1>
+
+    <!-- Начало формы -->
+    <form id="quizForm">
+
+        <!-- ВОПРОС 1: Одиночный выбор (тип r) -->
+        <!-- Атрибут data-type="r" - это просто метка для нас, чтобы понимать тип вопроса -->
+        <div class="question-block" data-type="r">
+            <div class="question-text">2+2=</div>
+
+            <!-- name="q1" объединяет эти радио-кнопки в одну группу. Можно выбрать только одну -->
+            <!-- value="4" - это значение, которое отправится при проверке -->
+            <label><input type="radio" name="q1" value="4"> 4</label>
+            <label><input type="radio" name="q1" value="5"> 5</label>
+            <label><input type="radio" name="q1" value="6"> 6</label>
+        </div>
+
+        <!-- ВОПРОС 2: Множественный выбор (тип c) -->
+        <div class="question-block" data-type="c">
+            <div class="question-text">Second question</div>
+
+            <!-- Здесь type="checkbox" позволяет выбрать несколько вариантов -->
+            <label><input type="checkbox" name="q2" value="A"> A</label>
+            <label><input type="checkbox" name="q2" value="B"> B</label>
+            <label><input type="checkbox" name="q2" value="C"> C</label>
+        </div>
+
+        <!-- ВОПРОС 3: Текстовый ввод (тип t) -->
+        <div class="question-block" data-type="t">
+            <div class="question-text">Text question</div>
+            <!-- Обычное текстовое поле для ввода -->
+            <input type="text" name="q3" placeholder="Enter answer...">
+        </div>
+
+        <!-- Кнопка проверки. type="button" чтобы страница не перезагружалась -->
+        <button type="button" onclick="checkAnswers()">Check Results</button>
+
+        <!-- Блок для вывода результата (изначально скрыт, style="display:none") -->
+        <div id="result" class="result" style="display:none;"></div>
+    </form>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+                /* --- БЛОК ЛОГИКИ (JAVASCRIPT) --- */
 
-        // Начальные координаты игрока (квадрата)
-        let playerX = 175;
-        let playerY = 175;
-        const playerSize = 50;
-        const speed = 20;
+                /*
+                 * В реальном проекте Java автоматически сгенерирует этот объект на основе DSL-файла.
+                 * Сейчас мы вписали ответы вручную для теста.
+                 * Ключи (q1, q2, q3) соответствуют атрибутам name в HTML выше.
+                 */
+                const correctAnswers = {
+                    q1: "4",          // Для одиночного выбора правильный ответ - строка "4"
+                    q2: ["B", "C"],   // Для множественного выбора - массив правильных ответов
+                    q3: "My answer"   // Для текстового ввода - строка "My answer"
+                };
 
-        // Функция отрисовки
-        function draw() {
-            // Очищаем экран
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Функция, которая вызывается при нажатии на кнопку
+                function checkAnswers() {
+                    let score = 0; // Счетчик правильных ответов
+                    let total = Object.keys(correctAnswers).length; // Общее количество вопросов
 
-            // Рисуем красный квадрат
-            ctx.fillStyle = '#ff3333';
-            ctx.fillRect(playerX, playerY, playerSize, playerSize);
-        }
+                    // --- ПРОВЕРКА ВОПРОСА 1 (Одиночный выбор) ---
+                    // Ищем выбранную радио-кнопку (checked) с именем q1
+                    const q1Selected = document.querySelector('input[name="q1"]:checked');
+                    // Если кнопка выбрана И ее значение совпадает с правильным - добавляем балл
+                    if (q1Selected && q1Selected.value === correctAnswers.q1) {
+                        score++;
+                    }
 
-        // Обработка нажатий клавиш
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp' && playerY > 0) playerY -= speed;
-            if (e.key === 'ArrowDown' && playerY < canvas.height - playerSize) playerY += speed;
-            if (e.key === 'ArrowLeft' && playerX > 0) playerX -= speed;
-            if (e.key === 'ArrowRight' && playerX < canvas.width - playerSize) playerX += speed;
+                    // --- ПРОВЕРКА ВОПРОСА 2 (Множественный выбор) ---
+                    // Собираем все выбранные чекбоксы с именем q2 в массив
+                    const q2Selected = Array.from(document.querySelectorAll('input[name="q2"]:checked')).map(cb => cb.value);
+                    const q2Correct = correctAnswers.q2;
 
-            draw(); // Перерисовываем после каждого движения
-        });
+                    // Сортируем оба массива и склеиваем в строку, чтобы сравнить независимо от порядка нажатия
+                    // Например, если выбран B и C, будет "B,C". И правильный тоже "B,C". Они совпадут.
+                    if (q2Selected.sort().join(',') === q2Correct.sort().join(',')) {
+                        score++;
+                    }
 
-        // Первый запуск отрисовки
-        draw();
+                    // --- ПРОВЕРКА ВОПРОСА 3 (Текстовый ввод) ---
+                    const q3Input = document.querySelector('input[name="q3"]');
+                    // trim() убирает лишние пробелы в начале и конце строки (чтобы " ответ " считалось как "ответ")
+                    if (q3Input.value.trim() === correctAnswers.q3) {
+                        score++;
+                    }
+
+                    // --- ВЫВОД РЕЗУЛЬТАТА ---
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.display = 'block'; // Показываем блок с результатом
+                    resultDiv.innerHTML = `You answered ${score} out of ${total} questions correctly.`;
+
+                    // Меняем цвет блока в зависимости от результата
+                    if (score === total) {
+                        resultDiv.className = 'result correct'; // Зеленый, если всё верно
+                    } else {
+                        resultDiv.className = 'result incorrect'; // Красный, если есть ошибки
+                    }
+                }
     </script>
 </body>
 </html>
