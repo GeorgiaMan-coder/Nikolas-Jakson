@@ -1,7 +1,7 @@
 ## Group Members
-* [Участник 1] - Backend Development (Java, Parser, Gson)
-* [Участник 2] - Frontend Development (HTML, CSS, JavaScript)
-* [Участник 3] - Testing, Documentation, GitHub Pages deployment
+* Ригвава - Backend Development (Java, Parser, Gson)
+* Девочка пони - Frontend Development (HTML, CSS, JavaScript)
+* Селиванов - Testing, Documentation, GitHub Pages deployment
 # Quiz DSL Generator
 ## Project Description
 This is a group project developed as part of the university coursework. The application generates an interactive HTML/JavaScript quiz form based on a custom Domain-Specific Language (DSL). 
@@ -82,8 +82,8 @@ Open index.html in any modern web browser.
 Alternatively, use GitHub Pages link: [Вставьте вашу ссылку на GitHub Pages сюда]
 Screenshots of Results
 [Сюда нужно будет вставить скриншоты]
-https://link_to_image/ - Example of the generated quiz form.
-https://link_to_image/ - Example of the dark theme and validation result.
+![Uploading изображение.png…]() - Example of the generated quiz form.
+![Uploading изображение.png…]() - Example of the dark theme and validation result.
 Known Weaknesses and Limitations
 During the defense, we will demonstrate the following weaknesses of our current implementation:
 
