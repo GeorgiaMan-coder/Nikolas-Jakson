@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Моя первая игра</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            font-family: sans-serif;
+            margin-top: 50px;
+        }
+
+        canvas {
+            background-color: #111;
+            border: 3px solid #555;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Моя первая игра!</h1>
+    <p>Управление: стрелки на клавиатуре</p>
+
+    <!-- Это поле, где происходит игра -->
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Начальные координаты игрока (квадрата)
+        let playerX = 175;
+        let playerY = 175;
+        const playerSize = 50;
+        const speed = 20;
+
+        // Функция отрисовки
+        function draw() {
+            // Очищаем экран
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем красный квадрат
+            ctx.fillStyle = '#ff3333';
+            ctx.fillRect(playerX, playerY, playerSize, playerSize);
+        }
+
+        // Обработка нажатий клавиш
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' && playerY > 0) playerY -= speed;
+            if (e.key === 'ArrowDown' && playerY < canvas.height - playerSize) playerY += speed;
+            if (e.key === 'ArrowLeft' && playerX > 0) playerX -= speed;
+            if (e.key === 'ArrowRight' && playerX < canvas.width - playerSize) playerX += speed;
+
+            draw(); // Перерисовываем после каждого движения
+        });
+
+        // Первый запуск отрисовки
+        draw();
+    </script>
+</body>
+</html>
