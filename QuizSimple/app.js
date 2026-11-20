@@ -12,6 +12,28 @@
     document.title = quiz.title || "Quiz";
     title.textContent = quiz.heading || quiz.title || "Quiz";
 
+    // ==========================================
+    // ДОБАВЛЕНО: Логика переключения темной темы
+    // ==========================================
+    var themeBtn = document.getElementById("theme-toggle");
+    
+    // Если бэкенд передал "Style dark", сразу включаем темную тему
+    if (quiz.style === "dark") {
+        document.body.classList.add("dark");
+        themeBtn.textContent = "☀️ Светлая тема";
+    }
+
+    // Обработчик клика по кнопке
+    themeBtn.addEventListener("click", function () {
+        document.body.classList.toggle("dark");
+        if (document.body.classList.contains("dark")) {
+            themeBtn.textContent = "☀️ Светлая тема";
+        } else {
+            themeBtn.textContent = "🌙 Темная тема";
+        }
+    });
+    // ==========================================
+
     quiz.questions.forEach(function (question, questionIndex) {
         var section = document.createElement("section");
         section.className = "question";
