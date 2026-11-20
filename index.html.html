@@ -1,196 +1,292 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <!-- Кодировка страницы, чтобы русские буквы и спецсимволы отображались правильно -->
     <meta charset="UTF-8">
-    <!-- Заголовок вкладки браузера. В реальном проекте Java подставит сюда значение из директивы Title -->
-    <title>My title</title>
-
+    <title>Генератор тестов</title>
     <style>
-        /* --- БЛОК СТИЛЕЙ (CSS) --- */
-        /* Общие настройки для всей страницы */
-        body {
-            font-family: sans-serif; /* Шрифт без засечек */
-            max-width: 600px; /* Максимальная ширина страницы */
-            margin: 20px auto; /* Отступы сверху/снизу и выравнивание по центру */
-            padding: 20px;
-            background-color: #f9f9f9; /* Светло-серый фон */
+        /* Базовая тема (Style default) */
+        body.default {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 680px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #f9fafb;
+            color: #111827;
         }
 
-        /* Стиль для блока каждого вопроса (белая карточка с тенью) */
-        .question-block {
-            background: white;
-            padding: 15px;
-            margin-bottom: 15px; /* Отступ между вопросами */
-            border-radius: 8px; /* Скругление углов */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Легкая тень */
-        }
-
-        /* Стиль для текста самого вопроса */
-        .question-text {
-            font-weight: bold; /* Жирный шрифт */
-            font-size: 1.2em; /* Чуть больше обычного текста */
-            margin-bottom: 10px;
-        }
-
-        /* Стиль для вариантов ответов (чтобы они шли друг под другом) */
-        label {
-            display: block;
-            margin: 5px 0;
-            cursor: pointer; /* Курсор в виде руки при наведении */
-        }
-
-        /* Стиль для поля текстового ввода */
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc; /* Серая рамка */
-            border-radius: 4px;
-            box-sizing: border-box; /* Чтобы padding не увеличивал ширину */
-        }
-
-        /* Стиль для кнопки проверки */
-        button {
-            background-color: #007bff; /* Синий цвет */
-            color: white; /* Белый текст */
-            padding: 10px 20px;
-            border: none; /* Убираем рамку */
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-        }
-
-            /* Эффект при наведении на кнопку */
-            button:hover {
-                background-color: #0056b3; /* Темно-синий цвет */
+            body.default .question-card {
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 16px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             }
 
-        /* Общие стили для блока с результатом */
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
+            body.default .question-title {
+                font-weight: 600;
+                margin-bottom: 12px;
+                font-size: 1.05rem;
+            }
+
+            body.default label {
+                display: block;
+                margin: 8px 0;
+                cursor: pointer;
+            }
+
+            body.default input[type="text"] {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 8px 12px;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 1rem;
+            }
+
+            body.default button {
+                background-color: #2563eb;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 1rem;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+                body.default button:hover {
+                    background-color: #1d4ed8;
+                }
+
+        /* Темная тема (если указать Style dark) */
+        body.dark {
+            font-family: system-ui, sans-serif;
+            max-width: 680px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #111827;
+            color: #f3f4f6;
         }
 
-        /* Стиль, если пользователь ответил на всё правильно (зеленый) */
+            body.dark .question-card {
+                background: #1f2937;
+                border: 1px solid #374151;
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 16px;
+            }
+
+        /* Индикация проверки */
         .correct {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            border-left: 5px solid #16a34a !important;
         }
 
-        /* Стиль, если есть ошибки (красный) */
         .incorrect {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            border-left: 5px solid #dc2626 !important;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
 
-    <!-- Главный заголовок теста. В реальном проекте Java подставит сюда значение из директивы H1 -->
-    <h1>Super Test</h1>
-
-    <!-- Начало формы -->
-    <form id="quizForm">
-
-        <!-- ВОПРОС 1: Одиночный выбор (тип r) -->
-        <!-- Атрибут data-type="r" - это просто метка для нас, чтобы понимать тип вопроса -->
-        <div class="question-block" data-type="r">
-            <div class="question-text">2+2=</div>
-
-            <!-- name="q1" объединяет эти радио-кнопки в одну группу. Можно выбрать только одну -->
-            <!-- value="4" - это значение, которое отправится при проверке -->
-            <label><input type="radio" name="q1" value="4"> 4</label>
-            <label><input type="radio" name="q1" value="5"> 5</label>
-            <label><input type="radio" name="q1" value="6"> 6</label>
-        </div>
-
-        <!-- ВОПРОС 2: Множественный выбор (тип c) -->
-        <div class="question-block" data-type="c">
-            <div class="question-text">Second question</div>
-
-            <!-- Здесь type="checkbox" позволяет выбрать несколько вариантов -->
-            <label><input type="checkbox" name="q2" value="A"> A</label>
-            <label><input type="checkbox" name="q2" value="B"> B</label>
-            <label><input type="checkbox" name="q2" value="C"> C</label>
-        </div>
-
-        <!-- ВОПРОС 3: Текстовый ввод (тип t) -->
-        <div class="question-block" data-type="t">
-            <div class="question-text">Text question</div>
-            <!-- Обычное текстовое поле для ввода -->
-            <input type="text" name="q3" placeholder="Enter answer...">
-        </div>
-
-        <!-- Кнопка проверки. type="button" чтобы страница не перезагружалась -->
-        <button type="button" onclick="checkAnswers()">Check Results</button>
-
-        <!-- Блок для вывода результата (изначально скрыт, style="display:none") -->
-        <div id="result" class="result" style="display:none;"></div>
-    </form>
+    <!-- Контейнер для сгенерированного теста -->
+    <div id="quiz-app"></div>
 
     <script>
-                /* --- БЛОК ЛОГИКИ (JAVASCRIPT) --- */
+            /**
+             * Парсер DSL в структурированный объект теста
+             */
+            function parseQuizDSL(dslText) {
+              const lines = dslText.split('\n').map(line => line.trim()).filter(Boolean);
+              const quiz = {
+                title: 'Тест',
+                h1: 'Тестирование',
+                style: 'default',
+                questions: []
+              };
 
-                /*
-                 * В реальном проекте Java автоматически сгенерирует этот объект на основе DSL-файла.
-                 * Сейчас мы вписали ответы вручную для теста.
-                 * Ключи (q1, q2, q3) соответствуют атрибутам name в HTML выше.
-                 */
-                const correctAnswers = {
-                    q1: "4",          // Для одиночного выбора правильный ответ - строка "4"
-                    q2: ["B", "C"],   // Для множественного выбора - массив правильных ответов
-                    q3: "My answer"   // Для текстового ввода - строка "My answer"
-                };
+              let currentQuestion = null;
 
-                // Функция, которая вызывается при нажатии на кнопку
-                function checkAnswers() {
-                    let score = 0; // Счетчик правильных ответов
-                    let total = Object.keys(correctAnswers).length; // Общее количество вопросов
-
-                    // --- ПРОВЕРКА ВОПРОСА 1 (Одиночный выбор) ---
-                    // Ищем выбранную радио-кнопку (checked) с именем q1
-                    const q1Selected = document.querySelector('input[name="q1"]:checked');
-                    // Если кнопка выбрана И ее значение совпадает с правильным - добавляем балл
-                    if (q1Selected && q1Selected.value === correctAnswers.q1) {
-                        score++;
-                    }
-
-                    // --- ПРОВЕРКА ВОПРОСА 2 (Множественный выбор) ---
-                    // Собираем все выбранные чекбоксы с именем q2 в массив
-                    const q2Selected = Array.from(document.querySelectorAll('input[name="q2"]:checked')).map(cb => cb.value);
-                    const q2Correct = correctAnswers.q2;
-
-                    // Сортируем оба массива и склеиваем в строку, чтобы сравнить независимо от порядка нажатия
-                    // Например, если выбран B и C, будет "B,C". И правильный тоже "B,C". Они совпадут.
-                    if (q2Selected.sort().join(',') === q2Correct.sort().join(',')) {
-                        score++;
-                    }
-
-                    // --- ПРОВЕРКА ВОПРОСА 3 (Текстовый ввод) ---
-                    const q3Input = document.querySelector('input[name="q3"]');
-                    // trim() убирает лишние пробелы в начале и конце строки (чтобы " ответ " считалось как "ответ")
-                    if (q3Input.value.trim() === correctAnswers.q3) {
-                        score++;
-                    }
-
-                    // --- ВЫВОД РЕЗУЛЬТАТА ---
-                    const resultDiv = document.getElementById('result');
-                    resultDiv.style.display = 'block'; // Показываем блок с результатом
-                    resultDiv.innerHTML = `You answered ${score} out of ${total} questions correctly.`;
-
-                    // Меняем цвет блока в зависимости от результата
-                    if (score === total) {
-                        resultDiv.className = 'result correct'; // Зеленый, если всё верно
-                    } else {
-                        resultDiv.className = 'result incorrect'; // Красный, если есть ошибки
-                    }
+              for (const line of lines) {
+                // 1. Обработка метаданных
+                if (line.startsWith('Title ')) {
+                  quiz.title = line.slice(6).trim();
+                } else if (line.startsWith('H1 ')) {
+                  quiz.h1 = line.slice(3).trim();
+                } else if (line.startsWith('Style ')) {
+                  quiz.style = line.slice(6).trim();
                 }
+                // 2. Начало нового вопроса: "? Текст вопроса r|c|t"
+                else if (line.startsWith('?')) {
+                  const match = line.match(/^\?\s+(.+?)\s+([rct])$/);
+                  if (match) {
+                    currentQuestion = {
+                      text: match[1].trim(),
+                      type: match[2],
+                      options: [],
+                      answer: ''
+                    };
+                    quiz.questions.push(currentQuestion);
+                  }
+                }
+                // 3. Варианты ответа для r и c: "- Вариант [+] [e]"
+                else if (line.startsWith('-') && currentQuestion) {
+                  let content = line.slice(1).trim();
+                  let isEnd = false;
+                  let isCorrect = false;
+
+                  // Проверяем маркер конца блока вариантов 'e' (учитывая слитное "+e" и раздельное "+ e")
+                  if (content.endsWith('e')) {
+                    isEnd = true;
+                    content = content.slice(0, -1).trim();
+                  }
+
+                  // Проверяем маркер правильного ответа '+'
+                  if (content.endsWith('+')) {
+                    isCorrect = true;
+                    content = content.slice(0, -1).trim();
+                  }
+
+                  currentQuestion.options.push({
+                    text: content,
+                    correct: isCorrect
+                  });
+
+                  if (isEnd) {
+                    currentQuestion = null;
+                  }
+                }
+                // 4. Правильный ответ для текстового поля: "_ Ответ"
+                else if (line.startsWith('_') && currentQuestion && currentQuestion.type === 't') {
+                  currentQuestion.answer = line.slice(1).trim();
+                  currentQuestion = null;
+                }
+              }
+
+              return quiz;
+            }
+
+            /**
+             * Генератор HTML-формы на основе разобранного объекта
+             */
+            function renderQuiz(dslText, containerId) {
+              const quizData = parseQuizDSL(dslText);
+              const container = document.getElementById(containerId);
+
+              // Применяем метаданные
+              document.title = quizData.title;
+              document.body.className = quizData.style;
+
+              container.innerHTML = '';
+
+              const heading = document.createElement('h1');
+              heading.textContent = quizData.h1;
+              container.appendChild(heading);
+
+              const form = document.createElement('form');
+
+              quizData.questions.forEach((q, qIndex) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `q-card-${qIndex}`;
+
+                const title = document.createElement('div');
+                title.className = 'question-title';
+                title.textContent = `${qIndex + 1}. ${q.text}`;
+                card.appendChild(title);
+
+                if (q.type === 'r' || q.type === 'c') {
+                  const inputType = q.type === 'r' ? 'radio' : 'checkbox';
+                  q.options.forEach((opt, optIndex) => {
+                    const label = document.createElement('label');
+                    const input = document.createElement('input');
+                    input.type = inputType;
+                    input.name = `question_${qIndex}`;
+                    input.value = optIndex;
+
+                    label.appendChild(input);
+                    label.append(` ${opt.text}`);
+                    card.appendChild(label);
+                  });
+                } else if (q.type === 't') {
+                  const input = document.createElement('input');
+                  input.type = 'text';
+                  input.name = `question_${qIndex}`;
+                  input.placeholder = 'Введите ваш ответ...';
+                  card.appendChild(input);
+                }
+
+                form.appendChild(card);
+              });
+
+              const submitBtn = document.createElement('button');
+              submitBtn.type = 'submit';
+              submitBtn.textContent = 'Проверить ответы';
+              form.appendChild(submitBtn);
+
+              const resultBox = document.createElement('div');
+              resultBox.id = 'result';
+              form.appendChild(resultBox);
+
+              // Логика проверки результатов при отправке формы
+              form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let score = 0;
+
+                quizData.questions.forEach((q, qIndex) => {
+                  const card = document.getElementById(`q-card-${qIndex}`);
+                  card.classList.remove('correct', 'incorrect');
+                  let isQuestionCorrect = false;
+
+                  if (q.type === 'r' || q.type === 'c') {
+                    const inputs = form.querySelectorAll(`input[name="question_${qIndex}"]`);
+                    isQuestionCorrect = Array.from(inputs).every((input, idx) => {
+                      return input.checked === q.options[idx].correct;
+                    });
+                  } else if (q.type === 't') {
+                    const input = form.querySelector(`input[name="question_${qIndex}"]`);
+                    const userVal = input.value.trim().toLowerCase();
+                    const correctVal = q.answer.trim().toLowerCase();
+                    isQuestionCorrect = userVal === correctVal && correctVal !== '';
+                  }
+
+                  if (isQuestionCorrect) {
+                    score++;
+                    card.classList.add('correct');
+                  } else {
+                    card.classList.add('incorrect');
+                  }
+                });
+
+                resultBox.textContent = `Результат: ${score} из ${quizData.questions.length}`;
+              });
+
+              container.appendChild(form);
+            }
+
+            // --- Пример запуска с кодом из вашего задания ---
+            const dslSource = `
+Title My title
+H1 Super Test
+Style default
+? 2+2= r
+- 4 +
+- 5
+- 6 e
+? Second question c
+- A
+- B +
+- C +e
+? Text question t
+_ My answer
+            `;
+
+            renderQuiz(dslSource, 'quiz-app');
     </script>
 </body>
 </html>
