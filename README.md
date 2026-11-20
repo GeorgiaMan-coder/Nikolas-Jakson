@@ -1,4 +1,4 @@
-# Quiz DSL Generator
+# Quiz DSL Generator 
 ## Project Description
 This is a group project developed as part of the university coursework. The application generates an interactive HTML/JavaScript quiz form based on a custom Domain-Specific Language (DSL). 
 
