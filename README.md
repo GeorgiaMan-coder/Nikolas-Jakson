@@ -77,8 +77,8 @@ Open index.html in any modern web browser.
 
 Alternatively, use GitHub Pages link: [Вставьте вашу ссылку на GitHub Pages сюда]
 Screenshots of Results
-![Uploading изображение.png…]() - Example of the generated quiz form.
-![Uploading изображение.png…]() - Example of the dark theme and validation result.
+![Uploading vcCNern6fOZfrIw844dZThHjAELlM82Kak1vCnyyFcAvU4y2bT0jKk2s_uH12uCTRVTYGl63WCFM2FUebj-MTN0R.jpg…]() - Example of the generated quiz form.
+![Uploading YgbHgjn2i3XaFboBaClqjJ-zFIW-9IpgNUzBWt1wwi7ZbFX_kMtsjcFIa6Hvj2zttrc3WsQI-10LGaHU3QEbaaOU.jpg…]()  - Example of the dark theme and validation result.
 Known Weaknesses and Limitations
 During the defense, we will demonstrate the following weaknesses of our current implementation:
 
