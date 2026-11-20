@@ -81,7 +81,6 @@ Open index.html in any modern web browser.
 
 Alternatively, use GitHub Pages link: [Вставьте вашу ссылку на GitHub Pages сюда]
 Screenshots of Results
-[Сюда нужно будет вставить скриншоты]
 ![Uploading изображение.png…]() - Example of the generated quiz form.
 ![Uploading изображение.png…]() - Example of the dark theme and validation result.
 Known Weaknesses and Limitations
