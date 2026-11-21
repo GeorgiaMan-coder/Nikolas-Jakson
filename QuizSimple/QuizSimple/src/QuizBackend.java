@@ -1,0 +1,315 @@
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+public class QuizBackend {
+
+    static class Question {
+        String text;
+        char type;
+        List<String> options = new ArrayList<String>();
+        List<Boolean> correct = new ArrayList<Boolean>();
+        String textAnswer;
+
+        // ДОБАВЛЕНО: поля для таблицы
+        List<String> leftColumn = new ArrayList<String>();
+        List<String> rightColumn = new ArrayList<String>();
+
+        Question(String text, char type) {
+            this.text = text;
+            this.type = type;
+        }
+    }
+
+    public static void main(String[] args) {
+        String inputFile = args.length > 0 ? args[0] : "input.txt";
+        String outputFile = args.length > 1 ? args[1] : "quiz-data.js";
+
+        try {
+            List<String> lines = Files.readAllLines(
+                    Paths.get(inputFile), StandardCharsets.UTF_8);
+
+            String title = "Quiz";
+            String heading = "Quiz";
+            List<Question> questions = new ArrayList<Question>();
+            Question current = null;
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i).trim();
+                int lineNumber = i + 1;
+
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                if (line.startsWith("Title ")) {
+                    title = line.substring(6).trim();
+                    continue;
+                }
+
+                if (line.startsWith("H1 ")) {
+                    heading = line.substring(3).trim();
+                    continue;
+                }
+
+                // Вопрос: "? Текст вопроса r/c/t/m"
+                if (line.startsWith("?")) {
+                    if (current != null) {
+                        questions.add(current);
+                    }
+
+                    String content = line.substring(1).trim();
+                    int lastSpace = content.lastIndexOf(' ');
+
+                    if (lastSpace < 0) {
+                        throw new Exception("Строка " + lineNumber
+                                + ": добавьте тип вопроса r, c, t или m");
+                    }
+
+                    String questionText = content.substring(0, lastSpace).trim();
+                    String typeText = content.substring(lastSpace + 1).trim();
+
+                    // ДОБАВЛЕНО: буква m
+                    if (typeText.length() != 1
+                            || "rctm".indexOf(typeText.charAt(0)) < 0) {
+                        throw new Exception("Строка " + lineNumber
+                                + ": тип должен быть r, c, t или m");
+                    }
+
+                    current = new Question(questionText, typeText.charAt(0));
+                    continue;
+                }
+
+                if (current == null) {
+                    throw new Exception("Строка " + lineNumber
+                            + ": сначала укажите вопрос");
+                }
+
+                if (current.type == 't') {
+                    if (!line.startsWith("_")) {
+                        throw new Exception("Строка " + lineNumber
+                                + ": текстовый ответ должен начинаться с _");
+                    }
+                    current.textAnswer = line.substring(1).trim();
+                    continue;
+                }
+
+                // ДОБАВЛЕНО: обработка таблицы (m)
+                if (current.type == 'm') {
+                    if (!line.startsWith("-")) {
+                        throw new Exception("Строка " + lineNumber
+                                + ": строка таблицы должна начинаться с -");
+                    }
+                    String row = line.substring(1).trim();
+                    boolean endOfOptions = false;
+
+                    if (row.endsWith("e")) {
+                        row = row.substring(0, row.length() - 1).trim();
+                        endOfOptions = true;
+                    }
+
+                    if (!row.isEmpty()) {
+                        String[] parts = row.split("\\|");
+                        if (parts.length != 2) {
+                            throw new Exception("Строка " + lineNumber
+                                    + ": для таблицы нужен формат 'ЛеваяЧасть | ПраваяЧасть'");
+                        }
+                        current.leftColumn.add(parts[0].trim());
+                        current.rightColumn.add(parts[1].trim());
+                    }
+
+                    if (endOfOptions) {
+                        current = finishQuestion(current, questions, lineNumber);
+                    }
+                    continue;
+                }
+
+                // Обработка обычных вариантов (r, c)
+                if (!line.startsWith("-")) {
+                    throw new Exception("Строка " + lineNumber
+                            + ": вариант ответа должен начинаться с -");
+                }
+
+                String option = line.substring(1).trim();
+                boolean endOfOptions = false;
+
+                if (option.endsWith("+e")) {
+                    option = option.substring(0, option.length() - 1).trim();
+                    endOfOptions = true;
+                } else if (option.equals("e")) {
+                    option = "";
+                    endOfOptions = true;
+                } else if (option.endsWith(" e")) {
+                    option = option.substring(0, option.length() - 2).trim();
+                    endOfOptions = true;
+                }
+
+                boolean isCorrect = option.endsWith("+");
+                if (isCorrect) {
+                    option = option.substring(0, option.length() - 1).trim();
+                }
+
+                if (option.isEmpty()) {
+                    throw new Exception("Строка " + lineNumber
+                            + ": текст варианта ответа пустой");
+                }
+
+                current.options.add(option);
+                current.correct.add(isCorrect);
+
+                if (endOfOptions) {
+                    current = finishQuestion(current, questions, lineNumber);
+                }
+            }
+
+            if (current != null) {
+                questions.add(current);
+            }
+
+            if (questions.isEmpty()) {
+                throw new Exception("В файле нет вопросов");
+            }
+
+            String js = createJavaScript(title, heading, questions);
+
+            Files.write(Paths.get(outputFile),
+                    js.getBytes(StandardCharsets.UTF_8));
+
+            System.out.println("Готово! Создан файл: " + outputFile);
+
+        } catch (Exception e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    }
+
+    private static Question finishQuestion(
+            Question question, List<Question> questions, int lineNumber)
+            throws Exception {
+
+        checkQuestion(question, lineNumber);
+        questions.add(question);
+        return null;
+    }
+
+    private static void checkQuestion(Question question, int lineNumber)
+            throws Exception {
+
+        if (question.type == 't') {
+            if (question.textAnswer == null || question.textAnswer.isEmpty()) {
+                throw new Exception("Строка " + lineNumber
+                        + ": не задан текстовый ответ");
+            }
+            return;
+        }
+
+        // ДОБАВЛЕНО: проверка для таблицы
+        if (question.type == 'm') {
+            if (question.leftColumn.isEmpty() || question.rightColumn.isEmpty()) {
+                throw new Exception("Строка " + lineNumber
+                        + ": таблица не содержит данных");
+            }
+            if (question.leftColumn.size() != question.rightColumn.size()) {
+                throw new Exception("Строка " + lineNumber
+                        + ": количество строк в левой и правой колонке не совпадает");
+            }
+            return;
+        }
+
+        if (question.options.isEmpty()) {
+            throw new Exception("Строка " + lineNumber
+                    + ": у вопроса нет вариантов");
+        }
+
+        int correctCount = 0;
+        for (Boolean value : question.correct) {
+            if (value) {
+                correctCount++;
+            }
+        }
+
+        if (question.type == 'r' && correctCount != 1) {
+            throw new Exception("Строка " + lineNumber
+                    + ": у вопроса r должен быть ровно один правильный ответ");
+        }
+
+        if (question.type == 'c' && correctCount == 0) {
+            throw new Exception("Строка " + lineNumber
+                    + ": у вопроса c должен быть хотя бы один правильный ответ");
+        }
+    }
+
+    private static String createJavaScript(
+            String title, String heading, List<Question> questions)
+            throws Exception {
+
+        StringBuilder js = new StringBuilder();
+        js.append("window.QUIZ = {\n");
+        js.append("  title: \"").append(escape(title)).append("\",\n");
+        js.append("  heading: \"").append(escape(heading)).append("\",\n");
+        js.append("  questions: [\n");
+
+        for (int i = 0; i < questions.size(); i++) {
+            Question q = questions.get(i);
+
+            checkQuestion(q, i + 1);
+
+            js.append("    {\n");
+            js.append("      text: \"").append(escape(q.text)).append("\",\n");
+            js.append("      type: \"").append(q.type).append("\",\n");
+
+            if (q.type == 't') {
+                js.append("      answer: \"")
+                        .append(escape(q.textAnswer)).append("\"\n");
+            } else if (q.type == 'm') {
+                // ДОБАВЛЕНО: генерация JSON для таблицы
+                js.append("      leftColumn: [");
+                for (int j = 0; j < q.leftColumn.size(); j++) {
+                    js.append("\"").append(escape(q.leftColumn.get(j))).append("\"");
+                    if (j < q.leftColumn.size() - 1) js.append(", ");
+                }
+                js.append("],\n");
+                js.append("      rightColumn: [");
+                for (int j = 0; j < q.rightColumn.size(); j++) {
+                    js.append("\"").append(escape(q.rightColumn.get(j))).append("\"");
+                    if (j < q.rightColumn.size() - 1) js.append(", ");
+                }
+                js.append("]\n");
+            } else {
+                js.append("      options: [\n");
+                for (int j = 0; j < q.options.size(); j++) {
+                    js.append("        { text: \"")
+                            .append(escape(q.options.get(j)))
+                            .append("\", correct: ")
+                            .append(q.correct.get(j))
+                            .append(" }");
+
+                    if (j < q.options.size() - 1) {
+                        js.append(",");
+                    }
+                    js.append("\n");
+                }
+
+                js.append("      ]\n");
+            }
+
+            js.append("    }");
+            if (i < questions.size() - 1) {
+                js.append(",");
+            }
+            js.append("\n");
+        }
+
+        js.append("  ]\n");
+        js.append("};\n");
+        return js.toString();
+    }
+
+    private static String escape(String text) {
+        return text.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "")
+                .replace("\n", "\\n");
+    }
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+    <h1 id="quiz-title">Тест</h1>
+    
+    <!-- ДОБАВЛЕНА КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ -->
+    <button id="theme-toggle" type="button">🌙 Темная тема</button>
+
+    <form id="quiz-form"></form>
+    <button id="check-button" type="button">Проверить ответы</button>
+    <p id="result" aria-live="polite"></p>
+</main>
+
+<!-- Порядок важен: сначала данные, потом код страницы -->
+<script src="quiz-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
