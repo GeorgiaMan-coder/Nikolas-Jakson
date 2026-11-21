@@ -58,8 +58,6 @@ The Java backend parses the text above and generates a data file (quiz.json or q
     }
   ]
 }
------ИЗМЕНИТЬ----
-
 How to Run
 1. Run the Backend (Java)
 Open the project in IntelliJ IDEA.
@@ -74,8 +72,6 @@ The program will generate a quiz.json (or quiz-data.js) file.
 Place the generated data file in the same folder as index.html.
 
 Open index.html in any modern web browser.
-
-Alternatively, use GitHub Pages link: [Вставьте вашу ссылку на GitHub Pages сюда]
 Screenshots of Results
 ![Uploading vcCNern6fOZfrIw844dZThHjAELlM82Kak1vCnyyFcAvU4y2bT0jKk2s_uH12uCTRVTYGl63WCFM2FUebj-MTN0R.jpg…]() - Example of the generated quiz form.
 ![Uploading YgbHgjn2i3XaFboBaClqjJ-zFIW-9IpgNUzBWt1wwi7ZbFX_kMtsjcFIa6Hvj2zttrc3WsQI-10LGaHU3QEbaaOU.jpg…]()  - Example of the dark theme and validation result.
